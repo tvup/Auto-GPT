@@ -3,9 +3,9 @@ from __future__ import annotations
 
 import os
 import os.path
-from pathlib import Path
 from typing import Generator
-from autogpt.workspace import path_in_workspace, WORKSPACE_PATH
+
+from autogpt.workspace import WORKSPACE_PATH, path_in_workspace
 
 LOG_FILE = "file_logger.txt"
 LOG_FILE_PATH = WORKSPACE_PATH / LOG_FILE
