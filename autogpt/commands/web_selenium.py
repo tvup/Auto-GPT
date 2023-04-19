@@ -65,6 +65,11 @@ def scrape_text_with_selenium(url: str) -> tuple[WebDriver, str]:
     options.add_argument(
         "user-agent=Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/112.0.5615.49 Safari/537.36"
     )
+    
+    options.add_argument("--disable-dev-shm-usage")
+    options.add_argument("--remote-debugging-port=9222")
+    options.add_argument("--no-sandbox") # indent this line
+    options.add_argument("--headless") # Add this line
 
     if CFG.selenium_web_browser == "firefox":
         driver = webdriver.Firefox(
