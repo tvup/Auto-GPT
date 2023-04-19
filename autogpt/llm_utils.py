@@ -57,6 +57,7 @@ def create_chat_completion(
     model: str | None = None,
     temperature: float = CFG.temperature,
     max_tokens: int | None = None,
+    command: str | None = None,
 ) -> str:
     """Create a chat completion using the OpenAI API
 

@@ -27,7 +27,8 @@ class GPT4Model:
         }
 
     def create_chat_completion(self, messages: list, temperature: float = config.temperature,
-                               max_tokens: int | None = None) -> str:
+                               max_tokens: int | None = None,
+                               command: str | None = None) -> str:
         first_dict = messages[0]
         second_dict = messages[1]
 
@@ -36,10 +37,12 @@ class GPT4Model:
         splits = z.split('\n')
         cool_text = splits[0] + splits[1]
         cool_text = quote(cool_text)
-        another_cool_text = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
-        another_cool_text = quote(another_cool_text)
-        payload = f"bing_u_cookie={u_cookie}&question=" + cool_text + another_cool_text
+        if command is None:
+            another_cool_text = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
+            another_cool_text = quote(another_cool_text)
+            payload = f"bing_u_cookie={u_cookie}&question=" + cool_text + another_cool_text
 
+        payload = f"bing_u_cookie={u_cookie}&question=" + cool_text
         response = requests.request("POST", self.url, data=payload, headers=self.headers)
         response = response.text
         response = json.loads(response)
