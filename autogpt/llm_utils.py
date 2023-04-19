@@ -129,7 +129,7 @@ def create_chat_completion(
     if response is None:
         raise RuntimeError(f"Failed to get response after {num_retries} retries")
 
-    return response.choices[0].message["content"]
+    return response.text
 
 
 def create_embedding_with_ada(text) -> list:
