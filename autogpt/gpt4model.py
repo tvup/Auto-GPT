@@ -30,8 +30,6 @@ class GPT4Model:
                                max_tokens: int | None = None) -> str:
         first_dict = messages[0]
         second_dict = messages[1]
-        third_dict = messages[2]
-        fourth_dict = messages[3]
 
         y = json.loads(json.dumps(first_dict))
         z = y["content"]
