@@ -49,7 +49,7 @@ def call_ai_function(
         {"role": "user", "content": args},
     ]
 
-    return create_chat_completion(model=model, messages=messages, temperature=0, max_tokens=500000, command=command)
+    return create_chat_completion(model=model, messages=messages, temperature=0, max_tokens=None, command=command)
 
 
 # Overly simple abstraction until we create something better

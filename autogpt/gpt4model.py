@@ -61,16 +61,23 @@ class GPT4Model:
         response = response["data"]
 
         response = json.dumps(response)
-        response = response.replace("'messages'", "\"messages\"")
-        response = response.replace("'text_response'", "\"text_response\"")
-        response = response.replace("'sources'", "\"sources\"")
-        response = response.replace("'suggested_queries'", "\"suggested_queries\"")
-        response = response.replace("\n", "")
+        if response.find("'messages'") != -1:
+            response = response.replace("'messages'", "\"messages\"")
+        if response.find("'text_response'") != -1:
+            response = response.replace("'text_response'", "\"text_response\"")
+        if response.find("'sources'") != -1:
+            response = response.replace("'sources'", "\"sources\"")
+        if response.find("'suggested_queries'") != -1:
+            response = response.replace("'suggested_queries'", "\"suggested_queries\"")
+        if response.find("\n") != -1:
+            response = response.replace("\n", "")
         json_response = json.loads(response)
         json_response = json_response["text_response"]
         json_response = json.dumps(json_response)
-        json_response = json_response.replace("```json", "")
-        json_response = json_response.replace("```", "")
+        if response.find("```json") != -1:
+            json_response = json_response.replace("```json", "")
+        if response.find("```") != -1:
+            json_response = json_response.replace("```", "")
         json_response = json.loads(json_response)
         json_response = json.loads(json_response)
         return json.dumps(json_response)
