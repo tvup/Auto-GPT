@@ -64,6 +64,7 @@ def create_chat_completion(
     """Create a chat completion using the OpenAI API
 
     Args:
+        command (str, optional): The command to run
         messages (list[dict[str, str]]): The messages to send to the chat completion
         model (str, optional): The model to use. Defaults to None.
         temperature (float, optional): The temperature to use. Defaults to 0.9.

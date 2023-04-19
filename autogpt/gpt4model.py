@@ -54,6 +54,9 @@ class GPT4Model:
         while True:
             response = requests.request("POST", url, data=payload, headers=self.headers)
             response = json.loads(response.text)
+            if not response.has_key("status"):
+                print(response)
+                raise RuntimeError(f"Failed to process response")
             if response["status"] != "RUNNING":
                 break
             time.sleep(3)
