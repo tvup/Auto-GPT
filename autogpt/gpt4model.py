@@ -11,34 +11,36 @@ import json
 
 from urllib.parse import quote
 
-CFG = Config()
+config = Config()
 
-openai.api_key = CFG.openai_api_key
-ucookie = CFG.u_cookie
+openai.api_key = config.openai_api_key
+u_cookie = config.u_cookie
+
 
 class GPT4Model:
     def __init__(self):
         self.url = "https://chatgpt-4-bing-ai-chat-api.p.rapidapi.com/chatgpt-4-bing-ai-chat-api/0.2/async-send-message/"
         self.headers = {
             "content-type": "application/x-www-form-urlencoded",
-            "X-RapidAPI-Key": f"{CFG.rapid_api_key}",
+            "X-RapidAPI-Key": f"{config.rapid_api_key}",
             "X-RapidAPI-Host": "chatgpt-4-bing-ai-chat-api.p.rapidapi.com"
         }
 
-    def create_chat_completion(self, messages: list, temperature: float = CFG.temperature, max_tokens: int | None = None) -> str:
-        første_ordbog = messages[0]
-        anden_ordbog = messages[1]
-        tredje_ordbog = messages[2]
-        fjerde_ordbog = messages[3]
+    def create_chat_completion(self, messages: list, temperature: float = config.temperature,
+                               max_tokens: int | None = None) -> str:
+        first_dict = messages[0]
+        second_dict = messages[1]
+        third_dict = messages[2]
+        fourth_dict = messages[3]
 
-        y = json.loads(json.dumps(første_ordbog))
+        y = json.loads(json.dumps(first_dict))
         z = y["content"]
         splits = z.split('\n')
-        cooltext = splits[0] + splits[1]
-        cooltext = quote(cooltext)
-        anothercooltext = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
-        anothercooltext = quote(anothercooltext)
-        payload = f"bing_u_cookie={ucookie}&question=" + cooltext + anothercooltext
+        cool_text = splits[0] + splits[1]
+        cool_text = quote(cool_text)
+        another_cool_text = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
+        another_cool_text = quote(another_cool_text)
+        payload = f"bing_u_cookie={u_cookie}&question=" + cool_text + another_cool_text
 
         response = requests.request("POST", self.url, data=payload, headers=self.headers)
         response = response.text
@@ -63,11 +65,11 @@ class GPT4Model:
         response = response.replace("'sources'", "\"sources\"")
         response = response.replace("'suggested_queries'", "\"suggested_queries\"")
         response = response.replace("\n", "")
-        jsonresponse = json.loads(response)
-        jsonresponse = jsonresponse["text_response"]
-        jsonresponse = json.dumps(jsonresponse)
-        jsonresponse = jsonresponse.replace("```json", "")
-        jsonresponse = jsonresponse.replace("```", "")
-        jsonresponse = json.loads(jsonresponse)
-        jsonresponse = json.loads(jsonresponse)
-        return json.dumps(jsonresponse)
+        json_response = json.loads(response)
+        json_response = json_response["text_response"]
+        json_response = json.dumps(json_response)
+        json_response = json_response.replace("```json", "")
+        json_response = json_response.replace("```", "")
+        json_response = json.loads(json_response)
+        json_response = json.loads(json_response)
+        return json.dumps(json_response)
