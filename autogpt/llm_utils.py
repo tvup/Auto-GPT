@@ -77,7 +77,7 @@ def create_chat_completion(
             + f"Creating chat completion with model {model}, temperature {temperature},"
             f" max_tokens {max_tokens}" + Fore.RESET
         )
-
+    print(model)
     if model == "gpt-4":
         gpt4_model = GPT4Model()
         return gpt4_model.create_chat_completion(messages, temperature, max_tokens)
