@@ -95,7 +95,7 @@ def create_chat_completion(
                 payload = "bing_u_cookie=12aC2PWJcRqeE9MFHUEeXK_rmTgJbUXiiHVRmwzBQ5pQItsJGJzT_-FaSoxgHvrlk2lgVgH1YUsEh_1w5B_WcRcv7rAd76htUuUWVRWxfR3797n3WImT5RCxsaq0xz-TuAP66R1muPEjy2cspZHy8hm95UUrapTAFEfh3-mZOQciGhIQUtJ8U8xPA6M4VpmhzIyS8AWkNFq8AwjdB2U0OIiJSLZsmgg9NMAEoQy0Ns-U&question=" + ' '.join(messages)
                 headers = {
                     "content-type": "application/x-www-form-urlencoded",
-                    "X-RapidAPI-Key": "***REMOVED***",
+                    "X-RapidAPI-Key": CFG.rapid_api_key,
                     "X-RapidAPI-Host": "chatgpt-4-bing-ai-chat-api.p.rapidapi.com"
                 }
 

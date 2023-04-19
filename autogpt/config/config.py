@@ -108,6 +108,8 @@ class Config(metaclass=Singleton):
         # Initialize the OpenAI API client
         openai.api_key = self.openai_api_key
 
+        self.rapid_api_key = os.getenv("RAPID_API_KEY", "auto-gpt")
+
     def get_azure_deployment_id_for_model(self, model: str) -> str:
         """
         Returns the relevant deployment id for the model specified.
