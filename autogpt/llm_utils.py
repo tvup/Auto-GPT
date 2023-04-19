@@ -16,7 +16,8 @@ openai.api_key = CFG.openai_api_key
 
 
 def call_ai_function(
-    function: str, args: list, description: str, model: str | None = None
+    function: str, args: list, description: str, model: str | None = None,
+        command: str | None = None
 ) -> str:
     """Call an AI function
 
@@ -24,6 +25,7 @@ def call_ai_function(
     https://github.com/Torantulino/AI-Functions for more info.
 
     Args:
+        command:
         function (str): The function to call
         args (list): The arguments to pass to the function
         description (str): The description of the function
@@ -47,7 +49,7 @@ def call_ai_function(
         {"role": "user", "content": args},
     ]
 
-    return create_chat_completion(model=model, messages=messages, temperature=0)
+    return create_chat_completion(model=model, messages=messages, temperature=0, max_tokens=500000, command=command)
 
 
 # Overly simple abstraction until we create something better
@@ -78,10 +80,10 @@ def create_chat_completion(
             + f"Creating chat completion with model {model}, temperature {temperature},"
             f" max_tokens {max_tokens}" + Fore.RESET
         )
-
+    print(model)
     if model == "gpt-4":
         gpt4_model = GPT4Model()
-        return gpt4_model.create_chat_completion(messages, temperature, max_tokens)
+        return gpt4_model.create_chat_completion(messages, temperature, max_tokens, command)
 
     for attempt in range(num_retries):
         backoff = 2 ** (attempt + 2)
