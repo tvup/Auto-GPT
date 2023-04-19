@@ -48,7 +48,7 @@ class AgentManager(metaclass=Singleton):
 
         return key, agent_reply
 
-    def message_agent(self, key: str | int, message: str) -> str:
+    def message_agent(self, key: int | int, message: str) -> str:
         """Send a message to an agent and return its response
 
         Args:
