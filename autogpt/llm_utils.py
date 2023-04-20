@@ -43,7 +43,7 @@ def call_ai_function(
     messages = [
         {
             "role": "system",
-            "content": f"You are now the following python function: ```# {description}"
+            "content": f"Given the following python function: ```# {description}"
             f"\n{function}```\n\nOnly respond with your `return` value.",
         },
         {"role": "user", "content": args},
