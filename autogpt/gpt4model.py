@@ -27,7 +27,8 @@ class GPT4Model:
         }
 
     def create_chat_completion(self, messages: list, temperature: float = config.temperature,
-                               max_tokens: int | None = None) -> str:
+                               max_tokens: int | None = None,
+                               command: str | None = None) -> str:
         first_dict = messages[0]
         second_dict = messages[1]
 
@@ -36,10 +37,12 @@ class GPT4Model:
         splits = z.split('\n')
         cool_text = splits[0] + splits[1]
         cool_text = quote(cool_text)
-        another_cool_text = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
-        another_cool_text = quote(another_cool_text)
-        payload = f"bing_u_cookie={u_cookie}&question=" + cool_text + another_cool_text
+        if command is None:
+            another_cool_text = " You should only respond in JSON format as described below Response Format: { 'thoughts': { 'text': 'thought', 'reasoning': 'reasoning', 'plan': '- short bulleted - list that conveys - long-term plan', 'criticism': 'constructive self-criticism', 'speak': 'thoughts summary to say to user' }, 'command': { 'name': 'command name', 'args': { 'arg name': 'value' } } } Ensure the response can be parsed by Python json.loads"
+            another_cool_text = quote(another_cool_text)
+            payload = f"bing_u_cookie={u_cookie}&question=" + cool_text + another_cool_text
 
+        payload = f"bing_u_cookie={u_cookie}&question=" + cool_text
         response = requests.request("POST", self.url, data=payload, headers=self.headers)
         response = response.text
         response = json.loads(response)
@@ -51,6 +54,9 @@ class GPT4Model:
         while True:
             response = requests.request("POST", url, data=payload, headers=self.headers)
             response = json.loads(response.text)
+            if not "status" in response:
+                print(response)
+                raise RuntimeError(f"Failed to process response")
             if response["status"] != "RUNNING":
                 break
             time.sleep(3)
@@ -58,16 +64,28 @@ class GPT4Model:
         response = response["data"]
 
         response = json.dumps(response)
-        response = response.replace("'messages'", "\"messages\"")
-        response = response.replace("'text_response'", "\"text_response\"")
-        response = response.replace("'sources'", "\"sources\"")
-        response = response.replace("'suggested_queries'", "\"suggested_queries\"")
-        response = response.replace("\n", "")
+        if response.find("'messages'") != -1:
+            response = response.replace("'messages'", "\"messages\"")
+        if response.find("'text_response'") != -1:
+            response = response.replace("'text_response'", "\"text_response\"")
+        if response.find("'sources'") != -1:
+            response = response.replace("'sources'", "\"sources\"")
+        if response.find("'suggested_queries'") != -1:
+            response = response.replace("'suggested_queries'", "\"suggested_queries\"")
+        if response.find("\n") != -1:
+            response = response.replace("\n", "")
         json_response = json.loads(response)
-        json_response = json_response["text_response"]
+        if not "text_response" in json_response:
+            json_response = json_response["text_response"]
         json_response = json.dumps(json_response)
-        json_response = json_response.replace("```json", "")
-        json_response = json_response.replace("```", "")
+        if response.find("```json") != -1:
+            json_response = json_response.replace("```json", "")
+        if response.find("```") != -1:
+            json_response = json_response.replace("```", "")
         json_response = json.loads(json_response)
-        json_response = json.loads(json_response)
-        return json.dumps(json_response)
+        if type(json_response) is not dict:
+            json_response = json.loads(json_response)
+        if command is None:
+            return json.dumps(json_response)
+        else:
+            return json.dumps(json_response["text_response"])

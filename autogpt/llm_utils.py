@@ -16,7 +16,8 @@ openai.api_key = CFG.openai_api_key
 
 
 def call_ai_function(
-    function: str, args: list, description: str, model: str | None = None
+    function: str, args: list, description: str, model: str | None = None,
+        command: str | None = None
 ) -> str:
     """Call an AI function
 
@@ -24,6 +25,7 @@ def call_ai_function(
     https://github.com/Torantulino/AI-Functions for more info.
 
     Args:
+        command:
         function (str): The function to call
         args (list): The arguments to pass to the function
         description (str): The description of the function
@@ -41,13 +43,13 @@ def call_ai_function(
     messages = [
         {
             "role": "system",
-            "content": f"You are now the following python function: ```# {description}"
+            "content": f"Given the following python function: ```# {description}"
             f"\n{function}```\n\nOnly respond with your `return` value.",
         },
         {"role": "user", "content": args},
     ]
 
-    return create_chat_completion(model=model, messages=messages, temperature=0)
+    return create_chat_completion(model=model, messages=messages, temperature=0, max_tokens=None, command=command)
 
 
 # Overly simple abstraction until we create something better
@@ -57,10 +59,12 @@ def create_chat_completion(
     model: str | None = None,
     temperature: float = CFG.temperature,
     max_tokens: int | None = None,
+    command: str | None = None,
 ) -> str:
     """Create a chat completion using the OpenAI API
 
     Args:
+        command (str, optional): The command to run
         messages (list[dict[str, str]]): The messages to send to the chat completion
         model (str, optional): The model to use. Defaults to None.
         temperature (float, optional): The temperature to use. Defaults to 0.9.
@@ -80,7 +84,7 @@ def create_chat_completion(
     print(model)
     if model == "gpt-4":
         gpt4_model = GPT4Model()
-        return gpt4_model.create_chat_completion(messages, temperature, max_tokens)
+        return gpt4_model.create_chat_completion(messages, temperature, max_tokens, command)
 
     for attempt in range(num_retries):
         backoff = 2 ** (attempt + 2)
