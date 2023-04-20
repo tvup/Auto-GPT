@@ -75,12 +75,17 @@ class GPT4Model:
         if response.find("\n") != -1:
             response = response.replace("\n", "")
         json_response = json.loads(response)
-        json_response = json_response["text_response"]
+        if not "text_response" in json_response:
+            json_response = json_response["text_response"]
         json_response = json.dumps(json_response)
         if response.find("```json") != -1:
             json_response = json_response.replace("```json", "")
         if response.find("```") != -1:
             json_response = json_response.replace("```", "")
         json_response = json.loads(json_response)
-        json_response = json.loads(json_response)
-        return json.dumps(json_response)
+        if type(json_response) is not dict:
+            json_response = json.loads(json_response)
+        if command is None:
+            return json.dumps(json_response)
+        else:
+            return json.dumps(json_response["text_response"])
