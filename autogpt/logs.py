@@ -250,6 +250,8 @@ def remove_color_codes(s: str) -> str:
 
 
 def remove_ansi_escape(s: str) -> str:
+    if s is None:
+        return ""
     return s.replace("\x1B", "")
 
 
