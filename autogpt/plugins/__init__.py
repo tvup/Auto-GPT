@@ -247,6 +247,7 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
 
     # Zip-based plugins
     for plugin in plugins_path_path.glob("*.zip"):
+        plugin_enabled = None
         if moduleList := inspect_zip_for_modules(str(plugin), debug):
             for module in moduleList:
                 plugin = Path(plugin)
@@ -267,7 +268,8 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
                     ):
                         plugin_name = a_module.__name__
                         plugin_configured = plugins_config.get(plugin_name) is not None
-                        plugin_enabled = plugins_config.is_enabled(plugin_name)
+                        if plugin_configured:
+                            plugin_enabled = plugins_config.get(plugin_name).get("enabled") is not None
 
                         if plugin_configured and plugin_enabled:
                             logger.debug(
@@ -286,8 +288,12 @@ def scan_plugins(config: Config, debug: bool = False) -> List[AutoGPTPluginTempl
                                 f"name ({plugin_name}) as the key."
                             )
                     else:
+                        if hasattr(a_module, '__name__'):
+                            a_module_name = a_module.__name__
+                        else:
+                            a_module_name = type(a_module).__name__
                         logger.debug(
-                            f"Skipping {key}: {a_module.__name__} because it doesn't subclass AutoGPTPluginTemplate."
+                            f"Skipping {key}: {a_module_name} because it doesn't subclass AutoGPTPluginTemplate."
                         )
 
     # OpenAI plugins

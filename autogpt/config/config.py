@@ -2,7 +2,7 @@
 import contextlib
 import os
 import re
-from typing import Dict
+from typing import Dict, Any
 
 import yaml
 from colorama import Fore
@@ -22,7 +22,7 @@ class ConfigSettings(SystemSettings):
     file_logger_path: Optional[str]
     debug_mode: bool
     plugins_dir: str
-    plugins_config: dict[str, str]
+    plugins_config: dict[str, Any]
     continuous_limit: int
     speak_mode: bool
     skip_reprompt: bool
@@ -230,6 +230,11 @@ class Config(Configurable):
         if plugins_denylist:
             config_dict["plugins_denylist"] = plugins_denylist.split(",")
 
+        from autogpt.plugins import DEFAULT_PLUGINS_CONFIG_FILE
+        plugins_config_file = os.getenv("PLUGINS_CONFIG_FILE", DEFAULT_PLUGINS_CONFIG_FILE)
+        config_dict["plugins_config_file"] = plugins_config_file
+        config_dict["plugins_config"] = cls.load_plugins_config(plugins_config_file)
+
         with contextlib.suppress(TypeError):
             config_dict["image_size"] = int(os.getenv("IMAGE_SIZE"))
         with contextlib.suppress(TypeError):
@@ -255,6 +260,14 @@ class Config(Configurable):
         }
 
         return cls.build_agent_configuration(config_dict_without_none_values)
+
+    @classmethod
+    def load_plugins_config(cls, config_file: str) -> Dict[str, Any]:
+
+        with open(config_file) as file:
+            config_params = yaml.load(file, Loader=yaml.FullLoader) or {}
+
+        return config_params
 
     @classmethod
     def load_azure_config(cls, config_file: str = AZURE_CONFIG_FILE) -> Dict[str, str]:
